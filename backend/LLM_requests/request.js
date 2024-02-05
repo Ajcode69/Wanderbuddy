@@ -1,4 +1,4 @@
-export async function request(){
+export async function request(city,days){
     
     const url = 'https://api.getknit.ai/v1/router/run'
 
@@ -26,27 +26,21 @@ export async function request(){
     },
         "variables": [
         {
-            "name": "number_of_days",
-            "value": "7"
-        },
-        {
-            "name": "destination",
-            "value": "Thailand"
+            "name": city,
+            "value": `${days}`
         }
     ]}
 
 
-   await fetch(url, {
+   const output = await fetch(url, {
         method: 'POST',
         headers: headers,
         body: JSON.stringify(data)
     }).then((res)=>{
         console.log(res.status)
         return res.text()
-    }).then((res)=>{
-
-        console.log(res)
     })
-
     
+    return output
 }
+
