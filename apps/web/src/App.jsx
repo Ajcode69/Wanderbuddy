@@ -1,8 +1,11 @@
+import Header from './components/Header';
+import CreateTrip from './pages/CreateTrip';
+
 function App() {
   return (
-    <div className="app">
-      <h1>🧭 WanderBuddy</h1>
-      <p>AI-powered travel planner — coming soon.</p>
+    <div className="min-h-screen bg-slate-50 font-sans">
+      <Header />
+      <CreateTrip />
     </div>
   );
 }

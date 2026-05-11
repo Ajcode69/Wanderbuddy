@@ -14,13 +14,14 @@
   "dependencies": {
     "@prisma/client": "^6.0.0",
     "@supabase/supabase-js": "^2.45.0",
+    "@wanderbuddy/agent": "*",
     "cors": "^2.8.5",
     "dotenv": "^16.4.0",
     "express": "^4.21.0",
     "express-rate-limit": "^7.4.0",
     "helmet": "^8.0.0",
     "morgan": "^1.10.0",
-    "@wanderbuddy/agent": "*"
+    "zod": "^3.23.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.0",

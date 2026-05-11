@@ -1,20 +1,20 @@
 /**
  * @wanderbuddy/agent — barrel export
  *
- * Import anywhere in the monorepo:
- *
- *   import { nodes, workflows, tools, clients } from '@wanderbuddy/agent';
- *
- * Or import sub-modules directly:
- *
- *   import { researchNode } from '@wanderbuddy/agent/nodes';
- *   import { plannerGraph } from '@wanderbuddy/agent/workflows';
- *   import { weatherTool }  from '@wanderbuddy/agent/tools';
- *   import { llm }          from '@wanderbuddy/agent/clients';
+ * Library mode:
+ *   import { tripGraph } from '@wanderbuddy/agent';
+ *   import { generateContent } from '@wanderbuddy/agent/clients';
+ *   import { planTrip } from '@wanderbuddy/agent/nodes';
  */
 
-export * as nodes from './nodes/index.js';
+export { tripGraph } from './workflows/index.js';
+export { planTrip } from './nodes/index.js';
+export { generateContent, generateJSON, getClient } from './clients/index.js';
+export { SYSTEM_PROMPT, buildPlannerPrompt } from './utils/index.js';
+
+// Re-export namespaces
 export * as workflows from './workflows/index.js';
+export * as nodes from './nodes/index.js';
 export * as tools from './tools/index.js';
-export * as utils from './utils/index.js';
 export * as clients from './clients/index.js';
+export * as utils from './utils/index.js';

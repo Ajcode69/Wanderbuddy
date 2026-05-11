@@ -1,53 +1,10 @@
-/* ─── CSS Reset & Base ──────────────────────────────────────── */
-*,
-*::before,
-*::after {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  --color-bg: #0f1117;
-  --color-surface: #1a1d27;
-  --color-primary: #6c63ff;
-  --color-primary-hover: #5a52d5;
-  --color-text: #e4e4e7;
-  --color-text-muted: #71717a;
-  --radius: 12px;
-}
-
-html {
-  font-size: 16px;
-  -webkit-font-smoothing: antialiased;
-}
-
-body {
-  font-family: var(--font-family);
-  background: var(--color-bg);
-  color: var(--color-text);
-  line-height: 1.6;
-  min-height: 100vh;
-}
-
-#root {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-a {
-  color: var(--color-primary);
-  text-decoration: none;
-}
-
-.app {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  text-align: center;
-  gap: 1rem;
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 }
