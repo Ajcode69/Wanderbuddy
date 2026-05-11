@@ -3,9 +3,18 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./nodes": "./src/nodes/index.js",
+    "./workflows": "./src/workflows/index.js",
+    "./tools": "./src/tools/index.js",
+    "./utils": "./src/utils/index.js",
+    "./clients": "./src/clients/index.js"
+  },
   "scripts": {
-    "dev": "nodemon src/index.js",
-    "start": "node src/index.js"
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js"
   },
   "dependencies": {
     "@langchain/core": "^0.3.0",
