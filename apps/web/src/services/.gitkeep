@@ -1,0 +1,3 @@
+// Web app API client — add fetch wrappers here.
+// Example:
+// export async function fetchTrips() { ... }

@@ -1,0 +1,12 @@
+/**
+ * LangGraph Node Functions
+ *
+ * Each node is a pure function: (state) => updatedState
+ * Nodes are composed into workflows via LangGraph's StateGraph.
+ *
+ * Example:
+ * export async function researchDestination(state) {
+ *   // Call tools, LLMs, or APIs
+ *   return { ...state, research: result };
+ * }
+ */

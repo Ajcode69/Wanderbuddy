@@ -1,0 +1,15 @@
+/**
+ * Agent Tools
+ *
+ * Tools are functions that agents can invoke (search, API calls, etc.)
+ * Define them using @langchain/core's DynamicTool or StructuredTool.
+ *
+ * Example:
+ * import { DynamicTool } from '@langchain/core/tools';
+ *
+ * export const weatherTool = new DynamicTool({
+ *   name: 'get_weather',
+ *   description: 'Get current weather for a city',
+ *   func: async (city) => { ... },
+ * });
+ */

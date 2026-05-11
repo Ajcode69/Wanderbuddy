@@ -1,0 +1,3 @@
+// Controller stubs — add route handlers here.
+// Example:
+// export async function getTrips(req, res, next) { ... }

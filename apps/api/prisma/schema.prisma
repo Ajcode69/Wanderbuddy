@@ -1,0 +1,53 @@
+// Prisma Schema for WanderBuddy
+// https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─── Core Models ────────────────────────────────────────────
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  avatarUrl String?  @map("avatar_url")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  trips Trip[]
+
+  @@map("users")
+}
+
+model Trip {
+  id          String     @id @default(uuid())
+  userId      String     @map("user_id")
+  destination String
+  startDate   DateTime   @map("start_date")
+  endDate     DateTime   @map("end_date")
+  preferences Json?
+  itinerary   Json?
+  status      TripStatus @default(DRAFT)
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("trips")
+}
+
+enum TripStatus {
+  DRAFT
+  PLANNING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}

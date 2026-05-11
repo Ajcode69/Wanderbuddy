@@ -1,0 +1,28 @@
+{
+  "name": "wanderbuddy",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI-powered travel planner — monorepo",
+  "workspaces": [
+    "apps/*",
+    "agent",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:api": "npm run dev --workspace=@wanderbuddy/api",
+    "dev:web": "npm run dev --workspace=@wanderbuddy/web",
+    "dev:agent": "npm run dev --workspace=@wanderbuddy/agent",
+    "build:web": "npm run build --workspace=@wanderbuddy/web",
+    "db:generate": "npm run db:generate --workspace=@wanderbuddy/api",
+    "db:push": "npm run db:push --workspace=@wanderbuddy/api",
+    "db:migrate": "npm run db:migrate --workspace=@wanderbuddy/api",
+    "db:studio": "npm run db:studio --workspace=@wanderbuddy/api",
+    "lint": "eslint . --ext .js,.jsx --ignore-path .gitignore",
+    "format": "prettier --write \"**/*.{js,jsx,json,md,yaml,yml}\"",
+    "docker:up": "docker compose -f infra/docker-compose.yaml up --build",
+    "docker:down": "docker compose -f infra/docker-compose.yaml down"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

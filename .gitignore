@@ -1,0 +1,68 @@
+# ─── Dependencies ────────────────────────────────────────────
+node_modules/
+.pnp
+.pnp.js
+
+# ─── Build outputs ───────────────────────────────────────────
+dist/
+build/
+.next/
+out/
+*.tsbuildinfo
+
+# ─── Environment variables ───────────────────────────────────
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ─── Prisma ──────────────────────────────────────────────────
+prisma/migrations/**/migration_lock.toml
+
+# ─── Logs ────────────────────────────────────────────────────
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ─── OS files ────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ─── IDE / Editor ────────────────────────────────────────────
+.vscode/
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+
+# ─── Testing ─────────────────────────────────────────────────
+coverage/
+.nyc_output/
+
+# ─── Docker ──────────────────────────────────────────────────
+docker-compose.override.yaml
+
+# ─── React Native / Expo ─────────────────────────────────────
+apps/mobile/.expo/
+apps/mobile/ios/
+apps/mobile/android/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+
+# ─── Misc ────────────────────────────────────────────────────
+.cache/
+.temp/
+.tmp/
+*.tgz
