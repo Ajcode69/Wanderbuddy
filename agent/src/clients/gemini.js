@@ -1,6 +1,4 @@
 /**
- * Direct Google Gemini client — no LangChain model wrappers.
- *
  * Usage:
  *   import { generateContent } from '@wanderbuddy/agent/clients';
  *   const text = await generateContent('Plan a trip to Paris');
@@ -35,7 +33,7 @@ export function getClient() {
  */
 export async function generateContent(prompt, options = {}) {
   const ai = getClient();
-  const model = options.model || 'gemini-3.0-flash';
+  const model = options.model || 'gemini-3.1-flash-lite';
 
   const config = {
     temperature: options.temperature ?? 0.7,

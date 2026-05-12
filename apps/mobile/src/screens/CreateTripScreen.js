@@ -12,7 +12,6 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { generateTrip } from '../services/api';
 
 const { width } = Dimensions.get('window');
@@ -49,7 +48,7 @@ export default function CreateTripScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <View style={styles.safe}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -175,12 +174,12 @@ export default function CreateTripScreen() {
           </ScrollView>
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#F8F9FB' },
+  safe: { flex: 1, backgroundColor: '#F8F9FB', paddingTop: Platform.OS === 'android' ? 36 : Platform.OS === 'web' ? 8 : 50 },
   scroll: { flex: 1 },
   scrollContent: { paddingHorizontal: 20, paddingBottom: 100 },
 
@@ -221,7 +220,7 @@ const styles = StyleSheet.create({
   cardsRow: { gap: 12, paddingRight: 20 },
   card: { width: CARD_WIDTH, height: CARD_WIDTH * 1.3, borderRadius: 18, overflow: 'hidden', position: 'relative' },
   cardImage: { width: '100%', height: '100%', position: 'absolute' },
-  cardOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.3)', backgroundImage: undefined },
+  cardOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.3)' },
   ratingBadge: { position: 'absolute', top: 10, right: 10, backgroundColor: 'rgba(255,255,255,0.25)', borderRadius: 12, paddingHorizontal: 8, paddingVertical: 3 },
   ratingText: { color: '#fff', fontSize: 11, fontWeight: '600' },
   cardContent: { position: 'absolute', bottom: 12, left: 12 },

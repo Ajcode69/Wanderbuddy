@@ -23,6 +23,10 @@
       },
       "package": "com.wanderbuddy.app"
     },
+    "web": {
+      "bundler": "metro",
+      "favicon": "./assets/favicon.png"
+    },
     "extra": {
       "apiUrl": "http://localhost:4000"
     }
