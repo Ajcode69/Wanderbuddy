@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,8 +10,11 @@ import {
   ActivityIndicator,
   Dimensions,
   Platform,
+  FlatList,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { BlockRenderer } from './src/components/genui';
+import { useChat } from './src/hooks/useChat';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = width > 500 ? 180 : width * 0.42;
@@ -76,29 +79,51 @@ export default function App() {
   );
 }
 
-// ─── Create Screen ──────────────────────────────────────────
+// ─── Create Screen (with Gen UI Chat) ───────────────────────
 function CreateScreen() {
+  const { messages, isLoading, isActive, sendMessage, resetChat } = useChat();
   const [destination, setDestination] = useState('');
   const [dates, setDates] = useState('');
   const [description, setDescription] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const scrollRef = useRef(null);
 
-  async function handleSubmit() {
+  // Auto-scroll to bottom
+  useEffect(() => {
+    if (scrollRef.current && messages.length > 0) {
+      setTimeout(() => {
+        scrollRef.current?.scrollToEnd?.({ animated: true });
+      }, 100);
+    }
+  }, [messages]);
+
+  function handleSubmit() {
     if (!description.trim()) return;
-    setIsLoading(true);
-    try {
-      // TODO: Connect to API
-      await new Promise((r) => setTimeout(r, 1500));
-      alert('Trip planned! (Connect API to see results)');
-    } catch (err) {
-      alert(err.message);
-    } finally {
-      setIsLoading(false);
+    sendMessage(description.trim());
+    setDescription('');
+  }
+
+  function handleAction(value) {
+    if (value === 'generate') {
+      // TODO: trigger full generation
+      sendMessage('Generate my itinerary now!');
+    } else {
+      sendMessage(value);
     }
   }
 
+  function handleNewChat() {
+    resetChat();
+    setDescription('');
+  }
+
+  const lastAssistantIdx = messages.reduce(
+    (acc, msg, idx) => (msg.role === 'assistant' ? idx : acc),
+    -1,
+  );
+
   return (
     <ScrollView
+      ref={scrollRef}
       style={styles.scroll}
       contentContainerStyle={styles.scrollContent}
       showsVerticalScrollIndicator={false}
@@ -125,37 +150,41 @@ function CreateScreen() {
       </Text>
 
       {/* Place */}
-      <Text style={styles.label}>Place (optional)</Text>
-      <View style={styles.inputRow}>
-        <Text style={styles.inputIcon}>📍</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Where to?"
-          placeholderTextColor="#A0AEC0"
-          value={destination}
-          onChangeText={setDestination}
-        />
-      </View>
+      {!isActive && (
+        <>
+          <Text style={styles.label}>Place (optional)</Text>
+          <View style={styles.inputRow}>
+            <Text style={styles.inputIcon}>📍</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Where to?"
+              placeholderTextColor="#A0AEC0"
+              value={destination}
+              onChangeText={setDestination}
+            />
+          </View>
 
-      {/* Dates */}
-      <Text style={styles.label}>Dates (optional)</Text>
-      <View style={styles.inputRow}>
-        <Text style={styles.inputIcon}>📅</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Select dates"
-          placeholderTextColor="#A0AEC0"
-          value={dates}
-          onChangeText={setDates}
-        />
-      </View>
+          {/* Dates */}
+          <Text style={styles.label}>Dates (optional)</Text>
+          <View style={styles.inputRow}>
+            <Text style={styles.inputIcon}>📅</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Select dates"
+              placeholderTextColor="#A0AEC0"
+              value={dates}
+              onChangeText={setDates}
+            />
+          </View>
+        </>
+      )}
 
-      {/* Description */}
+      {/* Description / Chat Input */}
       <View style={styles.descBox}>
         <TextInput
           style={styles.descInput}
           multiline
-          placeholder={'Describe your dream trip... "A 5-day culinary journey through Tokyo"'}
+          placeholder={isActive ? 'Type your reply...' : 'Describe your dream trip... "A 5-day culinary journey through Tokyo"'}
           placeholderTextColor="#A0AEC0"
           value={description}
           onChangeText={setDescription}
@@ -178,35 +207,115 @@ function CreateScreen() {
         </View>
       </View>
 
-      {/* AI Itineraries */}
-      <View style={styles.sectionHead}>
-        <Text style={styles.sectionTitle}>AI itineraries</Text>
-        <TouchableOpacity><Text style={styles.viewAll}>View All</Text></TouchableOpacity>
-      </View>
-
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12, paddingRight: 20 }}>
-        {DEMO_CARDS.map((card) => (
-          <View key={card.destination} style={styles.card}>
-            <Image source={{ uri: card.image }} style={styles.cardImg} />
-            <View style={styles.cardOverlay} />
-            <View style={styles.ratingBadge}>
-              <Text style={styles.ratingText}>⭐ {card.rating}</Text>
-            </View>
-            <View style={styles.cardBottom}>
-              <Text style={styles.cardTitle}>{card.destination}</Text>
-              <View style={{ flexDirection: 'row', gap: 6 }}>
-                <View style={styles.tag}><Text style={styles.tagText}>{card.duration} days</Text></View>
-                <View style={[styles.tag, { backgroundColor: 'rgba(255,255,255,0.25)' }]}>
-                  <Text style={styles.tagText}>{card.tag}</Text>
-                </View>
+      {/* ─── Chat Messages ─── */}
+      {isActive && (
+        <View style={styles.chatSection}>
+          {/* Chat header */}
+          <View style={styles.chatHeader}>
+            <View style={styles.chatHeaderLeft}>
+              <View style={styles.chatAvatar}>
+                <Text style={styles.chatAvatarText}>W</Text>
+              </View>
+              <View>
+                <Text style={styles.chatName}>WanderBuddy</Text>
+                <Text style={styles.chatStatus}>
+                  {isLoading ? 'Thinking...' : 'Online'}
+                </Text>
               </View>
             </View>
-            <View style={styles.cardArrow}>
-              <Text style={{ color: '#fff', fontWeight: '700' }}>→</Text>
-            </View>
+            <TouchableOpacity onPress={handleNewChat}>
+              <Text style={styles.newChatBtn}>↻ New</Text>
+            </TouchableOpacity>
           </View>
-        ))}
-      </ScrollView>
+
+          {/* Messages */}
+          {messages.map((msg, msgIdx) => {
+            if (msg.role === 'user') {
+              return (
+                <View key={msg.id} style={styles.userMsgRow}>
+                  <View style={styles.userBubble}>
+                    <Text style={styles.userBubbleText}>{msg.content}</Text>
+                  </View>
+                </View>
+              );
+            }
+
+            const isLastAssistant = msgIdx === lastAssistantIdx;
+            return (
+              <View key={msg.id} style={styles.assistantMsgGroup}>
+                {msg.blocks?.map((block, blockIdx) => (
+                  <View key={block.id || `${msg.id}-${blockIdx}`} style={styles.blockWrap}>
+                    <BlockRenderer
+                      block={block}
+                      onAction={handleAction}
+                      isLast={isLastAssistant && !isLoading}
+                    />
+                  </View>
+                ))}
+              </View>
+            );
+          })}
+
+          {/* Loading dots */}
+          {isLoading && (
+            <View style={styles.loadingRow}>
+              <View style={styles.chatAvatar}>
+                <Text style={styles.chatAvatarText}>W</Text>
+              </View>
+              <View style={styles.loadingBubble}>
+                <ActivityIndicator size="small" color="#94A3B8" />
+              </View>
+            </View>
+          )}
+
+          {/* Skip to Generate */}
+          {messages.length >= 2 && !isLoading && (
+            <View style={styles.skipWrap}>
+              <TouchableOpacity
+                style={styles.skipBtn}
+                onPress={() => handleAction('generate')}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.skipBtnText}>⚡ Skip to Generation</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+      )}
+
+      {/* ─── Demo Cards ─── (hidden when chat is active) */}
+      {!isActive && (
+        <>
+          <View style={styles.sectionHead}>
+            <Text style={styles.sectionTitle}>AI itineraries</Text>
+            <TouchableOpacity><Text style={styles.viewAll}>View All</Text></TouchableOpacity>
+          </View>
+
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12, paddingRight: 20 }}>
+            {DEMO_CARDS.map((card) => (
+              <View key={card.destination} style={styles.card}>
+                <Image source={{ uri: card.image }} style={styles.cardImg} />
+                <View style={styles.cardOverlay} />
+                <View style={styles.ratingBadge}>
+                  <Text style={styles.ratingText}>⭐ {card.rating}</Text>
+                </View>
+                <View style={styles.cardBottom}>
+                  <Text style={styles.cardTitle}>{card.destination}</Text>
+                  <View style={{ flexDirection: 'row', gap: 6 }}>
+                    <View style={styles.tag}><Text style={styles.tagText}>{card.duration} days</Text></View>
+                    <View style={[styles.tag, { backgroundColor: 'rgba(255,255,255,0.25)' }]}>
+                      <Text style={styles.tagText}>{card.tag}</Text>
+                    </View>
+                  </View>
+                </View>
+                <View style={styles.cardArrow}>
+                  <Text style={{ color: '#fff', fontWeight: '700' }}>→</Text>
+                </View>
+              </View>
+            ))}
+          </ScrollView>
+        </>
+      )}
     </ScrollView>
   );
 }
@@ -263,8 +372,8 @@ const styles = StyleSheet.create({
   input: { flex: 1, fontSize: 14, color: '#1E293B' },
 
   // Description
-  descBox: { backgroundColor: '#fff', borderRadius: 18, borderWidth: 1, borderColor: '#E2E8F0', marginTop: 18, padding: 14, minHeight: 120 },
-  descInput: { fontSize: 14, color: '#1E293B', minHeight: 60, lineHeight: 20 },
+  descBox: { backgroundColor: '#fff', borderRadius: 18, borderWidth: 1, borderColor: '#E2E8F0', marginTop: 18, padding: 14, minHeight: 100 },
+  descInput: { fontSize: 14, color: '#1E293B', minHeight: 50, lineHeight: 20 },
   descActions: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 14, marginTop: 8 },
   sendBtn: { width: 38, height: 38, borderRadius: 19, backgroundColor: '#4F46E5', alignItems: 'center', justifyContent: 'center' },
 
@@ -284,4 +393,126 @@ const styles = StyleSheet.create({
   tag: { backgroundColor: 'rgba(79,70,229,0.7)', borderRadius: 8, paddingHorizontal: 7, paddingVertical: 2 },
   tagText: { color: '#fff', fontSize: 10, fontWeight: '600' },
   cardArrow: { position: 'absolute', bottom: 10, right: 10, width: 26, height: 26, borderRadius: 13, backgroundColor: '#4F46E5', alignItems: 'center', justifyContent: 'center' },
+
+  // ─── Chat Styles ───
+  chatSection: {
+    marginTop: 20,
+    backgroundColor: 'rgba(255,255,255,0.6)',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    padding: 16,
+  },
+  chatHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F1F5F9',
+  },
+  chatHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  chatAvatar: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#4F46E5',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  chatAvatarText: {
+    color: '#fff',
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  chatName: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#1E293B',
+  },
+  chatStatus: {
+    fontSize: 10,
+    color: '#94A3B8',
+  },
+  newChatBtn: {
+    fontSize: 12,
+    color: '#94A3B8',
+    fontWeight: '500',
+  },
+
+  // User message
+  userMsgRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginBottom: 10,
+  },
+  userBubble: {
+    backgroundColor: '#4F46E5',
+    borderRadius: 16,
+    borderTopRightRadius: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    maxWidth: '80%',
+  },
+  userBubbleText: {
+    color: '#fff',
+    fontSize: 14,
+    lineHeight: 20,
+  },
+
+  // Assistant
+  assistantMsgGroup: {
+    gap: 8,
+    marginBottom: 10,
+  },
+  blockWrap: {
+    marginBottom: 4,
+  },
+
+  // Loading
+  loadingRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+    marginBottom: 10,
+  },
+  loadingBubble: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    borderTopLeftRadius: 6,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderWidth: 1,
+    borderColor: '#F1F5F9',
+  },
+
+  // Skip
+  skipWrap: {
+    alignItems: 'center',
+    marginTop: 12,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#F1F5F9',
+  },
+  skipBtn: {
+    backgroundColor: '#4F46E5',
+    borderRadius: 14,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    shadowColor: '#4F46E5',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  skipBtnText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+  },
 });

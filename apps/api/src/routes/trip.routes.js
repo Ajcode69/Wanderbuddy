@@ -16,7 +16,20 @@ const planTripSchema = z.object({
     .max(2000),
 });
 
+const chatSchema = z.object({
+  messages: z
+    .array(
+      z.object({
+        role: z.enum(['user', 'assistant']),
+        content: z.string().min(1),
+      }),
+    )
+    .min(1, 'At least one message is required')
+    .max(50, 'Too many messages'),
+});
+
 // ─── Routes ─────────────────────────────────────────────────
 router.post('/plan', validate(planTripSchema), tripController.planTrip);
+router.post('/chat', validate(chatSchema), tripController.chat);
 
 export default router;

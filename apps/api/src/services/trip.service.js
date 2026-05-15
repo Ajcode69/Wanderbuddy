@@ -4,6 +4,7 @@
  */
 
 import { tripGraph } from '@wanderbuddy/agent';
+import { normalizeBlocks } from '@wanderbuddy/shared';
 import { CODES } from '../utils/codes.js';
 
 /**
@@ -50,3 +51,50 @@ export async function generateTripPlan(payload) {
     };
   }
 }
+
+/**
+ * Process a chat conversation turn using the AI agent in chat mode.
+ * Returns an array of Gen UI blocks.
+ *
+ * @param {{ messages: Array<{ role: string, content: string }> }} payload
+ * @returns {Promise<{ ok: boolean, code: string, message: string, data: any, warnings: string[] }>}
+ */
+export async function chatStep(payload) {
+  const { messages } = payload;
+
+  try {
+    const result = await tripGraph.invoke({
+      mode: 'chat',
+      messages,
+    });
+
+    if (result.status === 'failed') {
+      return {
+        ok: false,
+        code: CODES.AGENT_FAILED,
+        message: `Agent error: ${result.error}`,
+        data: { blocks: result.blocks || [] },
+        warnings: [],
+      };
+    }
+
+    const blocks = normalizeBlocks(result.blocks);
+
+    return {
+      ok: true,
+      code: CODES.TRIP_PLAN_GENERATED,
+      message: 'Chat step completed',
+      data: { blocks },
+      warnings: [],
+    };
+  } catch (err) {
+    return {
+      ok: false,
+      code: CODES.INTERNAL_ERROR,
+      message: `Service error: ${err.message}`,
+      data: null,
+      warnings: [],
+    };
+  }
+}
+

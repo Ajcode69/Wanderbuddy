@@ -20,3 +20,17 @@ export async function planTrip(req, res) {
     });
   }
 }
+
+export async function chat(req, res) {
+  try {
+    const result = await tripService.chatStep(req.validatedBody);
+    return sendResponse(res, result);
+  } catch (err) {
+    console.error('[TRIP CONTROLLER] Chat error:', err);
+    return sendResponse(res, {
+      ok: false,
+      code: CODES.INTERNAL_ERROR,
+      message: err.message,
+    });
+  }
+}

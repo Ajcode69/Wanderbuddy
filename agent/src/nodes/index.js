@@ -1,1 +1,1 @@
-export { planTrip } from './planner.js';
+export { planTrip, chatStep } from './planner.js';

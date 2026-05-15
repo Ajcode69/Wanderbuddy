@@ -8,9 +8,9 @@
  */
 
 export { tripGraph } from './workflows/index.js';
-export { planTrip } from './nodes/index.js';
+export { planTrip, chatStep } from './nodes/index.js';
 export { generateContent, generateJSON, getClient } from './clients/index.js';
-export { SYSTEM_PROMPT, buildPlannerPrompt } from './utils/index.js';
+export { SYSTEM_PROMPT, buildPlannerPrompt, CHAT_SYSTEM_PROMPT, buildChatPrompt } from './utils/index.js';
 
 // Re-export namespaces
 export * as workflows from './workflows/index.js';

@@ -1,1 +1,1 @@
-export { SYSTEM_PROMPT, buildPlannerPrompt } from './prompts.js';
+export { SYSTEM_PROMPT, buildPlannerPrompt, CHAT_SYSTEM_PROMPT, buildChatPrompt } from './prompts.js';
